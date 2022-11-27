@@ -29,9 +29,9 @@ const ReviewListItem = ({ item, onDelete }) => {
 const ReviewList = ({ items, onDelete }) => {
     return (
         <ul>
-            {items.map((item) => {
+            {items.map((item, index) => {
                 return (
-                    <li>
+                    <li key={item.id}>
                         <ReviewListItem item={item} onDelete={onDelete} />
                     </li>
                 );
