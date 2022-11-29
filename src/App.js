@@ -26,7 +26,7 @@ function App() {
         if (options.offset === 0) {
             setItems(reviews);
         } else {
-            setItems([...items, ...reviews]);
+            setItems((prevItems) => [...prevItems, ...reviews]);
         }
 
         setOffSet(options.offset + reviews.length);
