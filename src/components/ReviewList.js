@@ -1,4 +1,4 @@
-import "../ReviewList.css";
+import "./ReviewList.css";
 
 const formatDate = (value) => {
     const date = new Date(value);
