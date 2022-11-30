@@ -7,7 +7,20 @@ const FileInput = ({ name, value, onChange }) => {
         onChange(name, nextValue);
     };
 
-    return <input onChange={handleChange} ref={inputRef} type="file" />;
+    const handleClearClick = () => {
+        const inputNode = inputRef.current;
+        if (!inputNode) return;
+
+        inputNode.value = "";
+        onChange(name, null);
+    };
+
+    return (
+        <div>
+            <input onChange={handleChange} ref={inputRef} type="file" />
+            {value && <button onClick={handleClearClick}>X</button>}
+        </div>
+    );
 };
 
 export default FileInput;
