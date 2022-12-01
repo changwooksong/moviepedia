@@ -1,4 +1,6 @@
+import { useState } from "react";
 import Rating from "./Rating";
+import ReviewForm from "./ReviewForm";
 import "./ReviewList.css";
 
 const formatDate = (value) => {
@@ -6,8 +8,12 @@ const formatDate = (value) => {
     return `${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()}`;
 };
 
-const ReviewListItem = ({ item, onDelete }) => {
+const ReviewListItem = ({ item, onDelete, onEdit }) => {
     const handleDeleteClick = () => onDelete(item.id);
+
+    const handleEditClick = () => {
+        onEdit(item.id);
+    };
 
     return (
         <div className="ReviewListItem">
@@ -22,18 +28,42 @@ const ReviewListItem = ({ item, onDelete }) => {
                 <p>{formatDate(item.createdAt)}</p>
                 <p>{item.content}</p>
                 <button onClick={handleDeleteClick}>삭제</button>
+                <button onClick={handleEditClick}>수정</button>
             </div>
         </div>
     );
 };
 
 const ReviewList = ({ items, onDelete }) => {
+    const [editingId, setEditingId] = useState(null);
+
+    const handleCancle = () => setEditingId(null);
+
     return (
         <ul>
-            {items.map((item, index) => {
+            {items.map((item) => {
+                if (item.id === editingId) {
+                    const { imgUrl, title, rating, content } = item;
+                    const initialValues = { title, rating, content };
+
+                    return (
+                        <li key={item.id}>
+                            <ReviewForm
+                                initialValues={initialValues}
+                                initialPreview={imgUrl}
+                                onCancle={handleCancle}
+                            />
+                        </li>
+                    );
+                }
+
                 return (
                     <li key={item.id}>
-                        <ReviewListItem item={item} onDelete={onDelete} />
+                        <ReviewListItem
+                            item={item}
+                            onDelete={onDelete}
+                            onEdit={setEditingId}
+                        />
                     </li>
                 );
             })}
