@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createReview } from "../api";
+import useAsynce from "../hooks/useAsync";
 import FileInput from "./FileInput";
 import RatingInput from "./RatingInput";
 import "./ReviewForm.css";
@@ -15,12 +15,13 @@ function ReviewForm({
     initialValues = INITIAL_VALUES,
     initialPreview,
     onSubmitSuccess,
-
+    onSubmit,
     onCancle,
 }) {
     const [values, setValues] = useState(initialValues);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [submittingError, setSubmittingError] = useState(null);
+    const [isSubmitting, submittingError, onSubmitAsync] = useAsynce(onSubmit);
+    // const [isSubmitting, setIsSubmitting] = useState(false);
+    // const [submittingError, setSubmittingError] = useState(null);
 
     const handleChange = (name, value) => {
         setValues((prevValues) => ({
@@ -42,17 +43,19 @@ function ReviewForm({
         formData.append("content", values.content);
         formData.append("imgFile", values.imgFile);
 
-        let result;
-        try {
-            setSubmittingError(null);
-            setIsSubmitting(true);
-            result = await createReview(formData);
-        } catch (error) {
-            setSubmittingError(error);
-            return;
-        } finally {
-            setIsSubmitting(false);
-        }
+        let result = await onSubmitAsync(formData);
+        if (!result) return;
+
+        // try {
+        //     setSubmittingError(null);
+        //     setIsSubmitting(true);
+        //     result = await onSubmit(formData);
+        // } catch (error) {
+        //     setSubmittingError(error);
+        //     return;
+        // } finally {
+        //     setIsSubmitting(false);
+        // }
         const { review } = result;
         onSubmitSuccess(review);
         setValues(INITIAL_VALUES);
