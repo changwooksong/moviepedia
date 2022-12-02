@@ -13,6 +13,8 @@ const INITIAL_VALUES = {
 };
 
 function ReviewForm({
+    className = "",
+
     initialValues = INITIAL_VALUES,
     initialPreview,
     onSubmitSuccess,
@@ -64,35 +66,62 @@ function ReviewForm({
     };
 
     return (
-        <form className="ReviewForm" onSubmit={handleSubmit}>
+        <form className={`ReviewForm ${className}`} onSubmit={handleSubmit}>
             <FileInput
+                className="ReviewForm-preview"
                 name="imgFile"
                 value={values.imgFile}
                 initialPreview={initialPreview}
                 onChange={handleChange}
             />
-            <input
-                name="title"
-                value={values.title}
-                onChange={handleInputChange}
-            />
-            <RatingInput
-                name="rating"
-                value={values.rating}
-                onChange={handleChange}
-            />
-            <textarea
-                name="content"
-                value={values.content}
-                onChange={handleInputChange}
-            />
-            <button type="submit" disabled={isSubmitting}>
-                {t("confirm button")}
-            </button>
-            {onCancle && (
-                <button onClick={onCancle}>{t("cancle button")}</button>
-            )}
-            {submittingError?.message && <div>{submittingError.messge}</div>}
+            <div className="ReviewForm-rows">
+                <div className="ReviewForm-title-rating">
+                    <input
+                        className="ReviewForm-title"
+                        name="title"
+                        value={values.title}
+                        placeholder={t("title placeholder")}
+                        onChange={handleInputChange}
+                    />
+                    <RatingInput
+                        className="ReviewForm-rating"
+                        name="rating"
+                        value={values.rating}
+                        onChange={handleChange}
+                    />
+                </div>
+                <textarea
+                    className="ReviewForm-content"
+                    name="content"
+                    value={values.content}
+                    placeholder={t("content placeholder")}
+                    onChange={handleInputChange}
+                />
+                <div className="ReviewForm-error-buttons">
+                    <div className="ReviewForm-error">
+                        {submittingError && (
+                            <div>{submittingError.message}</div>
+                        )}
+                    </div>
+                    <div className="ReviewForm-buttons">
+                        {onCancle && (
+                            <button
+                                className="ReviewForm-cancel-button"
+                                onClick={onCancle}
+                            >
+                                {t("cancel button")}
+                            </button>
+                        )}
+                        <button
+                            className="ReviewForm-submit-button"
+                            disabled={isSubmitting}
+                            type="submit"
+                        >
+                            {t("confirm button")}
+                        </button>
+                    </div>
+                </div>
+            </div>
         </form>
     );
 }

@@ -5,11 +5,28 @@ import ReviewForm from "./components/ReviewForm";
 import ReviewList from "./components/ReviewList";
 import { LocaleProvider } from "./contexts/LocaleContext";
 import useAsynce from "./hooks/useAsync";
+import useTranslate from "./hooks/useTranslate";
 // import mockItems from "./mock.json";
+import logoImg from "./assets/logo.png";
+import ticketImg from "./assets/ticket.png";
 
 const LIMIT = 6;
 
+function AppSortButton({ selected, children, onClick }) {
+    return (
+        <button
+            disabled={selected}
+            className={`AppSortButton ${selected ? "selected" : ""}`}
+            onClick={onClick}
+        >
+            {children}
+        </button>
+    );
+}
+
 function App() {
+    const t = useTranslate();
+
     const [items, setItems] = useState([]);
     const [order, setOrder] = useState("createdAt");
     const [offset, setOffSet] = useState(0);
@@ -63,7 +80,7 @@ function App() {
         handleLoad({ order, offset, limit: LIMIT });
     };
 
-    const handleCreateSubmitSuccess = (review) => {
+    const handleCreateSuccess = (review) => {
         setItems((prevItems) => [review, ...prevItems]);
     };
 
@@ -85,31 +102,72 @@ function App() {
     }, [order, handleLoad]);
 
     return (
-        <LocaleProvider defaultValue="ko">
-            <div>
-                <LocaleSelect />
-                <div>
-                    <button onClick={handleNewestClick}>최신순</button>
-                    <button onClick={handleBestClick}>별점순</button>
+        <div className="App">
+            <nav className="App-nav">
+                <div className="App-nav-container">
+                    <img
+                        className="App-logo"
+                        src={logoImg}
+                        alt="MOVIDE PEDIA"
+                    />
+                    <LocaleSelect />
                 </div>
-                <ReviewForm
-                    onSubmit={createReview}
-                    onSubmitSuccess={handleCreateSubmitSuccess}
-                />
-                <ReviewList
-                    items={sortedItems}
-                    onDelete={handleDelete}
-                    onUpdate={updateReview}
-                    onUpdateSuccess={handleUpdateSuccess}
-                />
-                {hasNext && (
-                    <button disabled={isLoading} onClick={handleLoadMore}>
-                        더 보기
-                    </button>
-                )}
-                {loadingError?.message && <span>{loadingError.message}</span>}
+            </nav>
+            <div className="App-container">
+                <div
+                    className="App-ReviewForm"
+                    style={{
+                        backgroundImage: `url("${ticketImg}")`,
+                    }}
+                >
+                    <ReviewForm
+                        onSubmit={createReview}
+                        onSubmitSuccess={handleCreateSuccess}
+                    />
+                </div>
+                <div className="App-sorts">
+                    <AppSortButton
+                        selected={order === "createdAt"}
+                        onClick={handleNewestClick}
+                    >
+                        {t("newest")}
+                    </AppSortButton>
+                    <AppSortButton
+                        selected={order === "rating"}
+                        onClick={handleBestClick}
+                    >
+                        {t("best")}
+                    </AppSortButton>
+                </div>
+                <div className="App-ReviewList">
+                    <ReviewList
+                        items={sortedItems}
+                        onDelete={handleDelete}
+                        onUpdate={updateReview}
+                        onUpdateSuccess={handleUpdateSuccess}
+                    />
+                    {hasNext ? (
+                        <button
+                            className="App-load-more-button"
+                            disabled={isLoading}
+                            onClick={handleLoadMore}
+                        >
+                            {t("load more")}
+                        </button>
+                    ) : (
+                        <div className="App-load-more-button" />
+                    )}
+                    {loadingError?.message && (
+                        <span>{loadingError.message}</span>
+                    )}
+                </div>
             </div>
-        </LocaleProvider>
+            <footer className="App-footer">
+                <div className="App-footer-container">
+                    {t("terms of service")} | {t("privacy policy")}
+                </div>
+            </footer>
+        </div>
     );
 }
 
