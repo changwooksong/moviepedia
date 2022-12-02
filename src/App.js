@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { createReview, deleteReview, getReviews, updateReview } from "./api";
+import LocaleSelect from "./components/LocaleSelect";
 import ReviewForm from "./components/ReviewForm";
 import ReviewList from "./components/ReviewList";
+import { LocaleProvider } from "./contexts/LocaleContext";
 import useAsynce from "./hooks/useAsync";
 // import mockItems from "./mock.json";
+
 const LIMIT = 6;
 
 function App() {
@@ -82,28 +85,31 @@ function App() {
     }, [order, handleLoad]);
 
     return (
-        <div>
+        <LocaleProvider defaultValue="ko">
             <div>
-                <button onClick={handleNewestClick}>최신순</button>
-                <button onClick={handleBestClick}>별점순</button>
+                <LocaleSelect />
+                <div>
+                    <button onClick={handleNewestClick}>최신순</button>
+                    <button onClick={handleBestClick}>별점순</button>
+                </div>
+                <ReviewForm
+                    onSubmit={createReview}
+                    onSubmitSuccess={handleCreateSubmitSuccess}
+                />
+                <ReviewList
+                    items={sortedItems}
+                    onDelete={handleDelete}
+                    onUpdate={updateReview}
+                    onUpdateSuccess={handleUpdateSuccess}
+                />
+                {hasNext && (
+                    <button disabled={isLoading} onClick={handleLoadMore}>
+                        더 보기
+                    </button>
+                )}
+                {loadingError?.message && <span>{loadingError.message}</span>}
             </div>
-            <ReviewForm
-                onSubmit={createReview}
-                onSubmitSuccess={handleCreateSubmitSuccess}
-            />
-            <ReviewList
-                items={sortedItems}
-                onDelete={handleDelete}
-                onUpdate={updateReview}
-                onUpdateSuccess={handleUpdateSuccess}
-            />
-            {hasNext && (
-                <button disabled={isLoading} onClick={handleLoadMore}>
-                    더 보기
-                </button>
-            )}
-            {loadingError?.message && <span>{loadingError.message}</span>}
-        </div>
+        </LocaleProvider>
     );
 }
 
